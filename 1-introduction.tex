@@ -1,0 +1,201 @@
+Anomalies are patterns or items or observations in data that do not conform to a well-defined notion of rational behavior of observations\cite{chandola2009anomaly}. 
+In the literature, anomalies are also known as outliers, novelties, noise, deviations, and exceptions\cite{hodge2004survey}.
+%In almost every research field, when defining any application or model, the pattern of normal behavior should be determined. 
+%However, especially in the real world example, some observations prevent us from identifying this normal behavior, which is called {\it anomalies}.
+Identification of these anomalies in the defined context is known as {\it `anomaly detection'} (AD)\cite{mehra1971innovations}.
+The importance of anomaly detection is mainly due to the fact that anomalies usually contain critical and valuable information. 
+For example, fraudulent credit card transactions\cite{aleskerov1997cardwatch}, tumors in the brain MRIs\cite{spence2001detection} and heavy traffic on the network\cite{barford2002signal} are examples of anomalies and detection of them is vitally important. 
+On the other hand, it may be equally important to describe the normal working behavior or pattern of any system, and so we need to identify the anomalies within the observations to extract such a pattern. 
+%Consequently, anomaly detection is an essential problem to solve, and dealing with contradictions in observations is one of the fundamental issues in research.
+
+Anomaly detection is an omnipresent problem that has been researched in many different application areas. 
+It is similar to {\it noise removal}\cite{teng1990adaptive} or {\it noise accommodation}\cite{rousseeuw2005robust} or {\it novelty detection}\cite{markou2003noveltyA, markou2003noveltyB} problems in the literature. 
+All of these methods deal with unfamiliar observations in the data that do not conform to the usual pattern or distribution. 
+In the {\it noise removal} and {\it noise accommodation} problem, these observations are undesirable and ineffective. 
+On the other hand, in the {\it novelty detection} and {\it anomaly detection}, most of the valuable information and `interestingness' of the data lies in the unfamiliar observations.
+{\it Novelty detection} methods have the purpose of incorporating the novel pattern into the regular model.
+In contrast to these, the primary goals of the {\it anomaly detection} are to find or detect the problematic observations which may indicate some malfunctions or defects and try to distinguish abnormal observations and patterns by learning standard patterns.
+
+%There are mainly two different types of anomaly detection.
+There are, basically, two types of anomaly detection.
+The first type of anomaly detection methods focuses on static structures, which do not change over time and are capable of representing only a single snapshot of observations\cite{ranshous2015anomaly}.
+However, real-world scenarios have dynamic structures, which are evolving over time.
+So, both normal behavior and definition of the anomaly may vary.
+Therefore, the second type of anomaly detection methods takes into account the dynamic structures of the observations\cite{chandola2009anomaly}.
+Such methods evaluate observations under some `context'. 
+The structure of the system that generates the observations determines the notion of the context, which is a part of the problem.
+In literature, one of the essential contexts is the time series and called as {\it anomaly detection in time series} (ADTS). 
+In the context of the time series, observations will be affected by previous observation(s) (i.e., dynamical structures). 
+In ADTS, observations are evaluated under a context (i.e., time) and do not necessarily have to be an anomaly to be considered as anomalies.
+Such structures are named as {\it contextual anomaly} or {\it conditional anomaly}\cite{song2007conditional}. 
+In such structures, one observation could be considered as an anomaly according to the position in the sequence, i.e., a high number of transactions on the weekend is usual while fewer transactions are expected in the week.
+%In this structure, one point could be considered a typical instance while completely the same observation can be regarded as an anomaly.
+In particular, in the context of the anomaly detection in time series the interesting objects are often not rare objects, but `unexpected bursts' in the activity.
+Therefore, to detect abnormal movements in such a context, one should consider the time-series effect of the system.
+In this work, we are interested in such problems.
+
+\section{Related Work}
+
+The literature on anomaly detection is quite extensive. Excellent overviews of the anomaly detection methods are presented by \cite{chandola2009anomaly, hodge2004survey}, which covers almost all anomaly detection literature. In other overviews,  \cite{chandola2012anomaly, gupta2014outlier} investigates anomaly detection in time series problems. This two survey mention most of the current work on this subject.
+In another work, \cite{chandola2008comparing} studies the evaluation of the problem of anomaly detection. This work is essential since the evaluation of the AD is the omnipresent problem.
+
+On the other side of this work, we have to review the time-series literature, which is also an extensive literature. 
+In the surveys \cite{harvey1990forecasting, das1994time}, 
+authors investigate the nature of time series data in detail.
+In the work \cite{brockwell2002introduction}, the authors mentioned the most popular time series forecasting techniques and analysis.
+In \cite{barber2011bayesian, barber2010graphical}, they give Bayesian treatment for the solution of time-series problem, and they give detail about the most well-known time series models, HMM \cite{rabiner1989tutorial} and AR model. More recently, in \cite{langkvist2014review}, authors examine the deep learning approaches for unsupervised feature learning in the time series problems.
+
+So far, we talked about more general perspectives. However, there are many applications related to ADTS. One of the most recent and well-known studies is \cite{malhotra2015long}. In this study, a deep learning sequence model for ADTS is developed, and this work is applied to the {\it electro cardiogram} (ECG), space shuttle, power demand, and multi-sensor engine dataset. 
+Similarly, ADTS models are used for credit card fraud detection \cite{srivastava2008credit, aleskerov1997cardwatch}, industrial damage detection \cite{ouyang:17, romero:16} and attack detection in networks \cite{bontemps2016collective}.
+
+\section{Outlooks of the Problem}
+
+In this section, we will cover the outlooks of anomaly detection frequently encountered in applications.
+Basically, it is possible to distinguish these points of view as anomaly definition, problem definition, data types, and availability of the labels.
+
+Proper identification of the anomalies is crucial, and it is the first step in anomaly detection. 
+There are mainly two definitions of an anomaly which vary according to the problem, outlined in the literature which are;
+
+\begin{enumerate}
+    \item {\it Point Anomalies.} 
+    Point anomaly refers to cases where abnormal observations occur individually \cite{hawkins2002outlier}.
+    The single observation could be considered as an anomaly concerning the rest of the concerning the rest of the observations or unusual according to the data stream.
+    In this type of anomaly, one should define the boundary of typical region and observations which are different from the usual observations are called anomalies. 
+    Since the problem includes time as the context, the normal region should be determined according to this context.
+    
+    \item {\it Collective Anomalies.} 
+    Collective anomaly refers to the sequential collection of abnormal data samples according to the complete data stream\cite{chandola2009anomaly}.
+    In this type, observations can be considered as anomalies together even though they may not be anomalous individually.
+    In this context, both anomalies in observation intervals and changes in the generative model in the long term are examined.
+\end{enumerate}
+
+Even though the definition of the anomalies is the primary objective, the description of the problems requires different approaches and solutions. 
+In literature, most of the research focus on three main problem definitions;
+
+\begin{enumerate}
+    \item {\it Sequence-based AD.}
+    The primary purpose is to detect the abnormal sequences concerning data set, which consist of similar time series sequences.
+    Since different sequences are compared, each sequence could be considered as {\it multi-dimensional} (MD) data that accepts each timestep as a dimension.
+    Therefore classical anomaly detection methods can be valid in this type of problem.
+    
+    \item {\it Subsequence-based AD.}
+    The primary aim is to detect the unusual sub-sequence concerning the rest of the time series data set. 
+    The sub-sequences that does not fit the rest of the long sequence is searched.
+    Therefore, most of the sequence is assumed to be healthy, and sub-sequences most different than to the rest of the sequence are considered as an anomaly. 
+    In this work, we usually deal with sub-sequence based AD problems.
+    
+    \item {\it Pattern frequency based AD.}
+    This approach is slightly different from previous methods. 
+    It takes into account the occurrence rates of the observations, and if an observation has not occurred in the correct time than it is considered as an anomaly.
+\end{enumerate}
+
+It is essential to determine the nature of the input regardless of the problem because all systems operate according to specific inputs types and the nature of data determines both the model and methodology. 
+Both inputs and observations could be {\it binary}, {\it categorical} or {\it continuous} as a data type and could be {\it univariate} or {\it multivariate} according to data dimension. 
+In addition to these, observations could be count data, or there may be other constraints on them.
+Furthermore, there are periodicity and synchronization features of time series data. 
+Both the nature of the data and the constraints affect the models to be applied.
+Finally, one who will deal with ADTS problem should evaluate the relations between the observations\cite{tan2018introduction}.
+In this work, we consider observations as a time series and divide them into three parts according to data types regarding time series effect;
+
+\begin{enumerate}
+    \item {\it Continuous streams.} Observations in which the flow occurs continuously.
+    Observation indexes are defined within a finite or infinite interval.
+    \item {\it Discrete streams.} Observations are formed by event logs, so it is discrete sequences. Our work is based on discrete streams.
+    \item {\it Multi-dimensional streams.} Each observation is fed from multiple sources and includes more than one instance. According to data sources, it could be both {\it continuous stream} or {\it discrete stream} or the mixture of them.
+\end{enumerate}
+
+One of another main outlook of the anomaly detection problem is the Availability of the labeled data.
+In the literature, there are typically three classes of anomaly detection according to the availability of the data labels \cite{chandola2009anomaly}.
+
+\begin{enumerate}
+     \item {\it Supervised Anomaly Detection.} 
+     Requires a labeled dataset for each observation. 
+     Therefore the main problem becomes a classification problem. 
+     The only difference is that abnormal observations do not act as a class because of the unbalanced nature of anomalies.
+     
+     \item {\it Semisupervised Anomaly Detection.} 
+     Requires the knowledge of the ordinary behavior at the training set. 
+     In this technique, the usual working behavior of the system will be learned from the training data labeled as healthy. 
+     At the test phase, abnormal observations will be detected.
+     
+     \item {\it Unsupervised Anomaly Detection.} 
+     The primary assumption of this technique is that one should suppose that there is a small amount of the abnormal observations in both train and the test dataset. 
+     The main goal is to detect abnormal pattern rather than finding abnormal observations.
+\end{enumerate}
+
+Labeling all observations in sequential data is costly.
+Therefore, in most cases, getting a labeled set of data is almost impossible.
+Moreover, if one of the system or anomalies have a dynamical structure, then a new class of patterns or anomalies can arise.
+It means that there could be no labeled data for a while.
+
+\section{Challenges}
+
+Anomaly detection problems are straightforward at the conceptual level. 
+One should define the representation of the ordinary behavior or region of the observations and then declare any observation which does not comply with this definition as an anomaly. 
+However, there are some challenges in the anomaly detection problem, which made the problem hard to solve.
+
+\begin{enumerate}
+    \item {\it Definition of normal behavior}: 
+    This problem is a crucial point for almost any machine learning problem. 
+    Especially in the unsupervised methods, observations include both normal and abnormal data, so one can not directly define the regular pattern of the system according to data. 
+    So one needs to detect anomalies to find the normal region and then determine the normal region to declare anomalies. 
+    Obviously, this problem is recursive and more complicated than it seems.
+    
+    \item {\it Evolution of normal behavior}: 
+    In many domains, the definition of healthy behavior is evolving. 
+    In such cases, the previous definition of healthy behavior may not be sufficient to explain the new one.
+    So, one has to take this phenomenon into account in anomaly detection application to accurately determine the anomaly.
+    
+    \item {\it Definition of the anomaly}: 
+    Applications usually have a wide variety of nature and include a different kind of data. For example, an ECG, the periodicity of the observations is vital to detect anomalies while fraudulent transactions appear on single observations.
+    On the other hand, an observation within a series could be continuous or discrete, and corresponding anomalies change form accordingly. 
+    Additionally, one could investigate single point in series or some sub-sequence or whole sequence, and the desired anomaly affects the entire model.
+    In addition to all these, sometimes evolution in the streaming observations could be an anomaly. 
+    
+    \item {\it Adversarial anomalies}: 
+    In most problems, the anomalies are not clearly visible. 
+    Furthermore, in some problems, adversarial anomalies are trying to hide within normal data (i.e., fraudulent transactions in the transaction records). 
+    
+    \item {\it Noise}: 
+    In real-world applications, observations usually collected in a noisy environment. 
+    On the other hand, anomalies are also some kind of noise.
+    Therefore, to develop successful anomaly detection method, one should separate the noise and anomalies. 
+
+    \item {\it Availability of the labeled data}: 
+    Available labels are vital for almost any machine learning problem but especially in anomaly detection. 
+    One needs to define the typical behavior pattern to declare some observations as an anomaly. 
+    To evaluate the correctness of the model, one directly needs labeled data.
+    Since the time series data is usually too large, the labels needed are often unreachable.
+    
+    \item {\it Computational Complexity}: 
+    Time series data is usually large and continues to expand. 
+    Therefore the ADTS problem requires lots of computational power.
+    
+    \item {\it Evaluation}:
+    Almost all time series data is not adequately labeled.
+    There may not even be a label in some of them.
+    In some cases, there may not be a direct label, in which the given label could be only foreseen.
+    Furthermore, sometimes anomalies in the system interfere with the intense noise.
+    So, the evaluation of ADTS could change according to the problem and the application.
+    
+\end{enumerate}
+
+In ADTS problems, there is no general solution. Solutions depend on the outlooks of the problem that are mentioned, such as type of data, the type of anomaly.
+The proposed solutions take shape according to the nature of the problems and try to cope with some of the above difficulties.
+
+\section{Scope of Our Work}
+
+So far, we defined the anomaly detection problem in time series data along with the motivation of this thesis and the previous works.
+We want to detect collective or point anomalies in discrete and multivariate streams using sub-sequence based anomaly detection approaches with semi-supervised anomaly detection methods. 
+We also want to discriminate the anomalies created by the system and the anomalies caused by the errors in the observations.
+To deal with such problems, we propose both statistical methods and deep learning algorithms. 
+To successfully model the sequential observations we use the `Hidden Markov Model' (HMM) as a statistical inference algorithm, while we use `Recurrent Neural Network' (RNN) and `Long Short Term Memory' (LSTM) as deep learning approaches. 
+Then, we compare the observations with the model predictions in order to create an anomaly score for each step.
+
+Our work focuses on two main applications, which are anomaly detection in wind turbines and anomaly detection in merchant transactions. In wind turbines, we define a set of observations as an anomaly while in merchant transactions, we interested in single point anomalies. Both applications rely on semi-supervised methods.
+
+The rest of the thesis is organized as follows: 
+The theoretical background required for the continuation of this thesis is given in Chapter 2.
+Chapter 3 contains the methods and algorithms that we propose to detect anomalies in time series.
+The data descriptions, experimental settings, and experimental results are given in Chapter 4.
+Chapter 5 includes the final comments about the works and further researches.

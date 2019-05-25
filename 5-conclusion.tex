@@ -1,0 +1,26 @@
+In this work, we developed some models and algorithms for anomaly detection in time series data.
+We conducted our work in two different approaches, which are statistical algorithms and deep learning based sequence models. As a result of this work, we developed two different models that can perform on the same datasets, and that can create a similar anomaly score.
+
+As a statistical approach, we developed a special kind of hidden Markov model which can handle noisy real-world data and can perform anomaly detection task on this data. We assign one additional hidden state, `outlier state' to the latent space to explain noisy, unwanted observations. This is similar to what we did in the GMM. In GMM, we defined Gaussian mixtures, which correspond to latent states of the system, and we represented an additional Gaussian mixture with has high variance, which corresponds to `outlier state' in HMM. However, in GMM, we can track anomalies only from the outlier state. If an observation falls into outlier state, then the model arises an anomaly error. This approach has the following  main drawbacks which we solved with HMM;
+
+\begin{enumerate}
+    \item The observations in the outlier state are often not outliers of the system we seek to detect. The observations in this state are mostly composed of errors in the observations.
+    \item GMM can not track the state transitions. Therefore, if unexpected observations occur, GMM cannot detect it.
+\end{enumerate}
+
+% As deep learning approaches, we propose models which are constructed with RNN and LSTM, respectively. 
+The deep learning based models we proposed are constructed with RNN and LSTM.
+This part of our study emerged by combining specific parts of two studies \cite{malhotra2015long,bontemps2016collective}. Malhotra et.al. in \cite{malhotra2015long} performed anomaly detection method on cyclic data; on the other hand, Bontemps et.al. in \cite{bontemps2016collective} tried to identify the collective anomalies. 
+In the light of these studies, we developed an anomaly detection model which first learns the patterns of the system and then evaluates the new coming observations considering the previous observations. 
+This model, similar to HMM, track more complex state transition, and therefore, it can catch the collective anomalies.
+We were able to observe the effects of the degree of past dependence on the system.
+Since LSTMs are very successful in capturing past links, we are achieving much more successful results with LSTMs when the system has such a dynamic.
+
+As we demonstrated in our experiments, the proposed models are powerful, flexible, and yield good results in an arguably challenging problem. Nonetheless, both models and applications can be further improved in many respects. Possible future research directions are as follows:
+
+\begin{enumerate}
+    \item Although our HMM model is successful in detecting anomaly states, it is not equally successful in capturing the change of system over time. Therefore, over time, its performance may decline.
+    \item Our LSTM model is successful in capturing collective anomalies but can be sensitive to missing data, which in some cases may adversely affect system performance.
+    \item In order to solve the two problems mentioned above, a more complex model can be created including the combination of LSTM and HMM or the particle filter.
+    \item Coupled anomaly detection is planned to be developed. Conduction of anomalies in the systems by looking at other parallel systems will improve the analysis and anomaly warnings.
+\end{enumerate}

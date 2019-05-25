@@ -1,0 +1,202 @@
+\documentclass[a4paper,oneside,12pt]{report}
+\usepackage{styles/fbe_tez}
+\usepackage[utf8x]{inputenc} % To use Unicode (e.g. Turkish) characters
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\usepackage{amsmath, amsthm, amssymb}
+ % Some extra symbols
+\usepackage[bottom]{footmisc}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{longtable}
+\graphicspath{{figures/}} % Graphics will be here
+
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{subfigure}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{mathtools}
+
+\newtheorem{thm}{Theorem}[chapter]
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{cor}[thm]{Corollary}
+% COVER PAGE
+\title{ANOMALY DETECTION IN TIME SERIES}
+\turkcebaslik{ZAMAN SERİLERİNDE OLAĞANDIŞILIK SEZİMİ}
+\degree{B.S., Electrical and Electronics Engineering, Boğaziçi University, 2016}
+\author{Onur Poyraz}
+\program{Computational Science and Engineering}
+\subyear{2019}
+
+% APPROVED BY PAGE
+\supervisor{Prof. Ali Taylan Cemgil}
+\examineri{Assist. Prof. Mustafa Baydoğan}
+\examinerii{Serap Kırbız, Ph.D.}
+\dateofapproval{May 27, 2019}
+
+\begin{document}
+
+\pagenumbering{roman}
+\makemstitle % M.S. thesis
+\makeapprovalpage
+
+\begin{acknowledgements}
+I would like to thank my supervisor Prof. Ali Taylan Cemgil for his support and mentorship. I feel genuinely privileged to study under his supervision. It was an honor for me to work with him. I also received a lot of support from my instructors in my graduate years. I especially want to thank Dr. Emre Uğur, and Prof. Cem Say. I would also like to thank Dr. Suzan Üsküdarlı for her cheerful approach.
+
+I have spent incredible years in my graduate study. For this, first of all, I should thank my friends in our lab. I feel lucky to be able to work with the members of PILAB Sigma, and I am grateful for this. Especially I thank my old friend and my fate partner Semih Akbayrak, Burak Kurutmaz who was once my business partner and will be my "brö" forever, my great friend Serkan Buğur, my lovely friend Merve Ünlü, and finally my knight brother Gökhan Çapan, for their excellent support on me. I also want to thank Hakan Kalaycı, Caner Türkmen, Çağlar Hızlı, Özge Bozal, Melih Barsbey, Serhan Daniş, Çağrı Sofuoğlu, İlker Gündoğdu and Burak Suyunu for their friendship, great academic discussions, and joyful coffee breaks. Finally, I thank Mine Öğretir for everything she has brought me and for her great support. They all made me love the department.
+
+On the other side, I want to thank my family. I would like to express my deepest gratitude for the opportunity they provided and their endless moral support. I wouldn't finish my graduate studies without them.
+
+Finally, I want to thank Borusan Arge and Bankalararası Kart Merkezi (BKM) for their data support. I participated in their projects, and it was a pleasure to work with them.
+\end{acknowledgements}
+
+\begin{abstract}
+Anomaly detection (AD) is the discovery of the observations which does not conform with the rest of the observations.
+The types of anomalies and their occurrences that exist in the data set are tried to be determined. 
+On the other hand, time series structures have dynamic structures, which are evolving over time, and in such structures, observations will be affected by previous observations. 
+This thesis focuses on the anomaly detection process under time series structures.
+This problem is not always straightforward because the definition of anomaly could change with the context of the dynamic structure and anomaly detection process in the system could interfere with the intense noises at the observations.
+
+In this thesis, we try to identify anomalies in the sub-sequences of the streaming data. 
+When doing so, we also want to discriminate the anomalies in the system with the faulty observations.
+Therefore we investigate collective anomalies in the data.
+We propose both statistical inference methods and deep learning approaches for such type of anomaly detection in time series (ADTS) problem.
+We use a Gaussian mixture model (GMM) and a customized hidden Markov model (HMM) as statistical approaches,
+while we use Recurrent Neural Networks (RNN) and Long Short-Term Memories (LSTM) as deep learning approaches.
+Except for GMMs, we take into account the sequential structures of data sets in the models proposed above.
+We apply our methodologies to the Borusan wind turbines data and 
+%NASA aircraft engines data, and 
+we compare the model results with the experiments we performed on this dataset.
+\end{abstract}
+
+\begin{ozet}
+Olağandışılık Sezimi (AD), mevcut veri kümesinin diğer gözlemleriyle örtüşmeyen gözlemlerin sezimlenmesidir.
+Olağandışılık türleri ile bunların veri kümesi içindeki oluşumları belirlenmeye çalışılır.
+Öte yandan, zaman serisi yapıları zaman içinde gelişen devingen yapılara sahiptir ve bu tür yapılarda gözlemler önceki gözlemlere bağlıdır.
+Bu tez, zaman serisi yapıları altındaki olağandışılık sezimi sürecine odaklanmaktadır.
+Bu problem her zaman kolay değildir, çünkü olağandışılığın tanımı, sürecin devingen yapısı bağlamında değişebilir ve sistem içerisindeki olağandışılık sezimi işlemi gözlemlerdeki yüksek gürültülerle karışabilir.
+
+Bu tezde, akış verilerinin alt kümelerinde meydana gelene olağandışılıkları belirlemeye çalışıyoruz.
+Bunu yaparken, sistemdeki olağandışılıkları hatalı gözlemlerden ayırt etmek istiyoruz.
+Bu nedenle verilerdeki toplu olağandışılıkları araştırmaktayız.
+Bu özelliklere sahip olan zaman serisinde olağandışılık sezimi (ADTS) için hem istatistiksel çıkarım yöntemleri hem de derin öğrenme yaklaşımları öneriyoruz.
+Derin öğrenme yaklaşımları olarak Tekrarlayan Sinir Ağları (RNN) ve Uzun Kısa Süreli Bellek'i (LSTM) kullanırken, Gaussian karışım modelini (GMM) ve özelleştirilmiş bir gizli Markov modelini (HMM) istatistiksel yaklaşımlar olarak kullanıyoruz.
+GMM'ler hariç, yukarıda önerilen modellerde veri kümelerinin sıralı yapılarını dikkate alıyoruz.
+Yöntemlerimizi, Borusan rüzgar türbinleri verilerine %ve NASA uçak motorları verilerine 
+uyguluyoruz ve model sonuçlarını bu veri kümesi üzerinde yaptığımız deneylerle karşılaştırıyoruz.
+\end{ozet}
+
+\tableofcontents
+\listoffigures
+%\listoftables
+
+\begin{symbols}
+% First Latin symbols in alphabetical order
+\sym{$\mathcal{BE}(.)$}{Bernoulli distribution}
+\sym{$\boldsymbol{C}$}{Cell state}
+\sym{$\mathcal{D}(.\|.)$}{Divargence metric}
+\sym{$\mathcal{D}_{KL}(.\|.)$}{Kullback-Leibler divergence}
+\sym{$\mathbb{E}_{p(.)}\left[.\right]$}{Expectation with respect to function $p(.)$}
+\sym{$\mathcal{E}_t$}{Anomaly prediction for time $t$}
+\sym{$\boldsymbol{\mathcal{L}}$}{Loss}
+\sym{$\mathcal{N}(.)$}{Gaussian distribution}
+\sym{$p(.)$}{Probability distribution function}
+\sym{$p$}{Neural network input parameters at time $t$}
+\sym{$\mathcal{P}$}{Input dimension of NN}
+\sym{$q\left(.\right)$}{Variational distribution function}
+\sym{$\mathcal{Q}(.,.)$}{Energy function between two variables}
+\sym{$r$}{Neural network output parameters at time $t$}
+\sym{$\hat{r}$}{Neural network predictions at time $t$}
+\sym{$\mathcal{R}$}{Output dimension of NN}
+\sym{$s_t$}{Hidden variable at time $t$}
+\sym{$s_{1:\mathcal{T}}$, $\boldsymbol{s}$}{Set of hidden variables}
+\sym{$S$}{Hidden state dimension}
+\sym{$\mathcal{T}$}{Number of time slices}
+\sym{$\boldsymbol{\mathcal{W}}$}{Weight matrix of the neural network}
+\sym{$x_t$}{Observed variable at time $t$}
+\sym{$x_{1:\mathcal{T}}$ , $\boldsymbol{x}$}{Set of observations}
+\sym{$y_t$}{Result at time $t$}
+\sym{$y_{1:\mathcal{T}}$, $\boldsymbol{y}$}{Set of results}
+\sym{$\hat{y}_t$}{Predicted variable at time $t$}
+\sym{$\hat{y}_{1:\mathcal{T}}$, $\boldsymbol{\hat{y}}$}{Set of predictions}
+% Then Greek symbols in alphabetical order
+\sym{}{}
+\sym{$\alpha(s_t)$}{Forward recursion}
+\sym{$\beta(s_t)$}{Backward recursion}
+\sym{$\gamma(s_t)$}{Correction smoother}
+\sym{$\eta$}{Learning rate}
+\sym{$\Theta$}{Parameter set}
+\sym{$\mu$}{Mean}
+\sym{$\boldsymbol{\pi}$}{Initial latent state parameter of hidden Markov Model}
+\sym{$\sigma(.)$}{Sigmoid Function}
+\sym{$\sigma$}{Variance}
+\sym{$\Sigma$}{High variance}
+\sym{$\phi (s_t)$}{Most likely hidden state sequence}
+\sym{$\tau$}{Time index}
+\sym{\boldmath $\Psi$}{State transition matrix of hidden Markov Model}
+\sym{$\Psi_{\hat{s}, \hat{s}^{\prime}}$}{Probability of state transition from state $\hat{s}^{\prime}$ to $\hat{s}$}
+\sym{\boldmath $\Omega$}{Emission probability of hidden Markov Model}
+\sym{$\Omega_{\hat{x}, \hat{s}}$}{Emission probability of observation $\hat{x}$ from given state $\hat{s}$}
+\end{symbols}
+
+\begin{abbreviations}
+ % Abbreviations in alphabetical order
+\sym{2D}{Two Dimensional}
+\sym{3D}{Three Dimensional}
+\sym{AD}{Anomaly Detection}
+\sym{ADTS}{Anomaly Detection in Time Series}
+\sym{ANN}{Artificial Neural Networks}
+\sym{AR}{Auto-Regressive}
+\sym{BPTT}{Backpropagation Throuh Time}
+\sym{EM}{Expectation-Maximization}
+\sym{GMM}{Gaussian Mixture Model}
+\sym{HMM}{Hidden Markov Model}
+\sym{KL}{Kullback-Leibler}
+\sym{LDS}{Linear Dynamical Systems}
+\sym{LSTM}{Long-Short Term Memory}
+\sym{MAP}{Maximum a Posteriori}
+\sym{MD}{Multidimensional}
+\sym{MLE}{Maximum Likelihood Estimation}
+\sym{MAD}{Median Absolute Deviation}
+\sym{MAE}{Mean Absolute Error}
+\sym{MAPE}{Mean Absolute Percentage Error}
+\sym{MSE}{Mean Square Error}
+\sym{NN}{Neural Network}
+\sym{RMSE}{Root Mean Square Error}
+\sym{RNN}{Recurrent Neural Network}
+\sym{SMC}{Sequential Monte Carlo}
+\sym{SSM}{State-Space Models}
+\end{abbreviations}
+
+\chapter{INTRODUCTION}
+\label{chapter:introduction}
+\pagenumbering{arabic}
+\input{1-introduction.tex}
+
+\chapter{THEORETICAL BACKGROUND}
+\label{chapter:theoretical-background}
+\input{2-background.tex}
+
+\chapter{MODELS AND ALGORITHMS FOR ANOMALY DETECTION}
+\label{chapter:models-and-algorithms-for-anomaly-detection}
+\input{3-models.tex}
+
+%\include{experiments_results}
+\chapter{EXPERIMENTS AND RESULTS}
+\label{chapter:experiments-and-results}
+\input{4-experiments.tex}
+
+\chapter{CONCLUSION AND FUTURE WORK}
+\label{chapter:conclusion-and-future-work}
+\input{5-conclusion.tex}
+
+\bibliographystyle{styles/fbe_tez_v11}
+\bibliography{references}
+
+\appendix
+\chapter{COMPARISON OF THE LOSS FUNCTIONS}
+\label{chapter:comparison-of-the-loss-functions}
+\input{6-loss.tex}
+
+\end{document}
